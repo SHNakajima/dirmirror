@@ -24,7 +24,7 @@ func main() {
 	flag.StringVar(&srcDir, "src", "", "Source directory to sync from")
 	flag.StringVar(&dstDir, "dst", "", "Destination directory to sync to")
 	flag.DurationVar(&syncInterval, "interval", 2*time.Second, "Sync polling interval")
-	flag.StringVar(&ignoreStr, "ignore", ".DS_Store,desktop.ini,Thumbs.db", "Comma-separated list of file/folder names to ignore")
+	flag.StringVar(&ignoreStr, "ignore", ".DS_Store,desktop.ini,Thumbs.db,Zone.Identifier,.obsidian/workspace,.trash", "Comma-separated list of file/folder names to ignore")
 	flag.Parse()
 
 	if srcDir == "" || dstDir == "" {
@@ -64,13 +64,21 @@ func main() {
 // 1. 無視ファイルの判定ロジック
 // ---------------------------------------------------------
 func shouldIgnore(path string) bool {
-	base := filepath.Base(path)
+	slashPath := filepath.ToSlash(path)
+	base := filepath.Base(slashPath)
 
 	for _, ignored := range ignoreList {
 		if ignored == "" {
 			continue
 		}
-		if strings.HasSuffix(base, ignored) || strings.Contains(path, string(os.PathSeparator)+ignored+string(os.PathSeparator)) {
+		ignored = filepath.ToSlash(ignored)
+		
+		// 拡張子/ファイル名の完全一致、またはパスの一部として含まれるか
+		if strings.HasSuffix(base, ignored) || 
+		   slashPath == ignored || 
+		   strings.HasPrefix(slashPath, ignored+"/") || 
+		   strings.Contains(slashPath, "/"+ignored+"/") || 
+		   strings.HasSuffix(slashPath, "/"+ignored) {
 			return true
 		}
 	}
@@ -94,11 +102,11 @@ func initialSync(dirA, dirB string) {
 		if !existsInB {
 			// Bに無い -> AからBへコピー（オフライン中の新規作成とみなす）
 			copyFile(pathA, pathB)
-			log.Printf("🔄 初期同期 (復元): %s -> iCloud\n", relPath)
-		} else if infoA.ModTime().After(infoB.ModTime()) {
+			log.Printf("🔄 初期同期 (復元): %s -> Dst\n", relPath)
+		} else if infoA.ModTime().Sub(infoB.ModTime()) > time.Second {
 			// Aの方が新しい -> AからBへ上書きコピー
 			copyFile(pathA, pathB)
-			log.Printf("🔄 初期同期 (更新): %s -> iCloud\n", relPath)
+			log.Printf("🔄 初期同期 (更新): %s -> Dst\n", relPath)
 		}
 	}
 
@@ -111,11 +119,11 @@ func initialSync(dirA, dirB string) {
 		if !existsInA {
 			// Aに無い -> BからAへコピー
 			copyFile(pathB, pathA)
-			log.Printf("🔄 初期同期 (復元): iCloud -> %s\n", relPath)
-		} else if infoB.ModTime().After(infoA.ModTime()) {
+			log.Printf("🔄 初期同期 (復元): Dst -> %s\n", relPath)
+		} else if infoB.ModTime().Sub(infoA.ModTime()) > time.Second {
 			// Bの方が新しい -> BからAへ上書きコピー
 			copyFile(pathB, pathA)
-			log.Printf("🔄 初期同期 (更新): iCloud -> %s\n", relPath)
+			log.Printf("🔄 初期同期 (更新): Dst -> %s\n", relPath)
 		}
 	}
 
@@ -178,7 +186,7 @@ func checkForChanges(srcDir, dstDir, direction string) {
 		lastTime, exists := fileModTimes[srcPath]
 
 		// 新規 or 更新
-		if !exists || info.ModTime().After(lastTime) {
+		if !exists || info.ModTime().Sub(lastTime) > time.Second {
 			relPath, _ := filepath.Rel(srcDir, srcPath)
 			dstPath := filepath.Join(dstDir, relPath)
 
@@ -237,5 +245,14 @@ func copyFile(src, dst string) error {
 	defer destination.Close()
 
 	_, err = io.Copy(destination, source)
+	destination.Close() // Chtimesの前に確実にクローズする
+
+	// ファイルの更新日時（ModTime）をコピー元に合わせる
+	if err == nil {
+		if errTime := os.Chtimes(dst, sourceFileStat.ModTime(), sourceFileStat.ModTime()); errTime != nil {
+			log.Printf("⚠️ 更新日時の同期に失敗 [%s]: %v\n", dst, errTime)
+		}
+	}
+
 	return err
 }
