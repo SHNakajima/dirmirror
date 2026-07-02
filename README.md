@@ -20,7 +20,7 @@ npx dirmirror --src ./source --dst ./destination
 
 ### Using Homebrew (macOS / Linux)
 ```bash
-brew tap your-username/dirmirror
+brew tap SHNakajima/dirmirror
 brew install dirmirror
 ```
 
@@ -31,7 +31,7 @@ choco install dirmirror
 
 ### Using Go (Developers)
 ```bash
-go install github.com/your-username/dirmirror@latest
+go install github.com/SHNakajima/dirmirror@latest
 ```
 
 ## Usage

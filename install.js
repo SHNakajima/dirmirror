@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const REPO = 'your-username/dirmirror'; // Change to your actual repo
+const REPO = 'SHNakajima/dirmirror'; // Change to your actual repo
 const VERSION = process.env.npm_package_version;
 
 const type = os.type();

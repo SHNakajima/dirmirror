@@ -43,11 +43,11 @@ changelog:
 # Homebrew tap setup
 # brews:
 #   - repository:
-#       owner: your-username
+#       owner: SHNakajima
 #       name: homebrew-dirmirror
 #       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
 #     directory: Formula
-#     homepage: "https://github.com/your-username/dirmirror"
+#     homepage: "https://github.com/SHNakajima/dirmirror"
 #     description: "A lightweight and fast directory synchronization CLI tool."
 #     test: |
 #       system "#{bin}/dirmirror --version"
@@ -55,11 +55,11 @@ changelog:
 # Chocolatey setup (requires API key)
 # scoop:
 #   repository:
-#     owner: your-username
+#     owner: SHNakajima
 #     name: scoop-bucket
 #   commit_author:
 #     name: goreleaserbot
 #     email: bot@goreleaser.com
-#   homepage: "https://github.com/your-username/dirmirror"
+#   homepage: "https://github.com/SHNakajima/dirmirror"
 #   description: "A lightweight and fast directory synchronization CLI tool."
 #   license: MIT
