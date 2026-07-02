@@ -8,30 +8,33 @@ A lightweight and fast directory synchronization CLI tool.
 - **Real-time Synchronization**: Polls directories and syncs changes automatically.
 - **Cross-platform**: Runs natively on Windows, macOS, and Linux.
 - **Customizable Ignore List**: Easily skip specific files or directories (e.g. `.DS_Store`, `node_modules`).
-- **Easy Installation**: Available via `npx`, `choco`, `brew`, or native Go tools.
+- **Easy Installation**: Available via native Go tools (`npx`, `choco`, `brew` support coming soon).
 
 ## Installation
 
-### Using npx (Node.js)
+> [!NOTE]
+> Currently, only installation via `go install` is supported. Other installation methods (`npx`, `brew`, `choco`) are under construction.
+
+### Using Go (Developers)
+```bash
+go install github.com/SHNakajima/dirmirror@latest
+```
+
+### Using npx (Node.js) (Coming Soon)
 The easiest way for JavaScript developers to use it without installing Go:
 ```bash
 npx dirmirror --src ./source --dst ./destination
 ```
 
-### Using Homebrew (macOS / Linux)
+### Using Homebrew (macOS / Linux) (Coming Soon)
 ```bash
 brew tap SHNakajima/dirmirror
 brew install dirmirror
 ```
 
-### Using Chocolatey (Windows)
+### Using Chocolatey (Windows) (Coming Soon)
 ```bash
 choco install dirmirror
-```
-
-### Using Go (Developers)
-```bash
-go install github.com/SHNakajima/dirmirror@latest
 ```
 
 ## Usage
