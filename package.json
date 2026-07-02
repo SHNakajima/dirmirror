@@ -1,0 +1,28 @@
+{
+  "name": "dirmirror",
+  "version": "1.0.0",
+  "description": "A lightweight and fast directory synchronization CLI tool.",
+  "bin": {
+    "dirmirror": "bin/dirmirror"
+  },
+  "scripts": {
+    "postinstall": "node install.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-username/dirmirror.git"
+  },
+  "keywords": [
+    "sync",
+    "directory",
+    "mirror",
+    "cli"
+  ],
+  "author": "Satoshi Nakajima",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "tar": "^6.2.0",
+    "unzipper": "^0.11.4"
+  }
+}
